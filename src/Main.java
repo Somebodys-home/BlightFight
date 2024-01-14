@@ -4,3 +4,5 @@ public class Main {
         blightFight.start();
     }
 }
+ // TBD:
+ // - add colors
