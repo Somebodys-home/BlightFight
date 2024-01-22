@@ -17,5 +17,4 @@ public class Colors {
     public static final String CYAN = "\033[0;36m";    // CYAN
 
     public static final String WHITE = "\033[0;37m";   // WHITE
-
 }
