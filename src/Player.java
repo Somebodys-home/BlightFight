@@ -140,12 +140,8 @@ public class Player {
     }
     public void reset() {
         health = 150;
-        weaknessTimer = -1;
-        paralysisTimer = -1;
-        passiveDamageTimer = -1;
-        blindnessTimer = -1;
+        conditions = new String[] {"-", "-", "-", "-"};
         updateConditionArray();
         updateConditionHyphens();
-        System.out.println("You feel yourself return to your prime!");
     }
 }

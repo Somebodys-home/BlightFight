@@ -119,16 +119,16 @@ public class Weapon {
         int upgradeStat = (int) (Math.random() * 3) + 1;
         if (upgradeStat == 1) {
             int upgrademini = (getMinimumDamage() / 5) * 6;
-            System.out.println("The blight grants you a boon! Your minimum damage has increased by " + upgrademini + "!");
+            System.out.println("The blight grants you a boon! Your minimum damage has increased to " + upgrademini + "!");
             setMinimumDamage(upgrademini);
         } else if (upgradeStat == 2) {
             int upgrademax = (getMaximumDamage() / 5) * 6;
             setMaximumDamage(upgrademax);
-            System.out.println("The blight grants you a boon! Your maximum damage has increased by " + upgrademax + "!");
+            System.out.println("The blight grants you a boon! Your maximum damage has increased to " + upgrademax + "!");
         } else if (upgradeStat == 3) {
             int upgradedodge = (int) (Math.random() * 15) + 5;
             setDodge(getDodge() + upgradedodge);
-            System.out.println("The blight grants you a boon! Your dodge chance has increased by " + upgradedodge + "!");
+            System.out.println("The blight grants you a boon! Your dodge chance has increased to " + upgradedodge + "!");
         }
     }
 }
