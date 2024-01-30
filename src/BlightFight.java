@@ -478,8 +478,8 @@ public class BlightFight {
             }
             playersTurn = !playersTurn;
             blightHasAttacked = false;
+            player.failCase();
         }
-        player.failCase();
         // insert ending here
     }
 // ----------UTILITY METHODS----------
@@ -566,37 +566,64 @@ public class BlightFight {
             }
         } else { // stage 3
             int twice = 0;
+            String repeat = "";
+            boolean rollAgain = false;
+
             while (twice != 2) {
                 int fx = (int) (Math.random() * 3);
 
                 if (fx == 0) { // leaf shield BUT BETTER
-                    System.out.println("You look around as moss and foliage wrap around the blight, increasing it's defences!");
-                    blight.setBlightDodge(30);
-                    leafShieldCount = 2;
+                    if (!repeat.equals("leaf")) {
+                        System.out.println("You look around as moss and foliage wrap around the blight, increasing it's defences!");
+                        blight.setBlightDodge(30);
+                        leafShieldCount = 2;
+                        repeat = "leaf";
+                    } else {
+                        rollAgain = true;
+                    }
                 } else if (fx == 1) { // spore swarm BUT BLINDNESS
                     String a = "";
                     int b = (int) (Math.random() * 3) + 1;
 
                     if (b == 1) {
-                        a = "Weakness";
+                        if (!repeat.equals("weakness")) {
+                            a = "Weakness";
+                            repeat = "weakness";
+                        } else {
+                            rollAgain = true;
+                        }
                     } else if (b == 2) {
-                        a = "Paralysis";
+                        if (!repeat.equals("paralysis")) {
+                            a = "Paralysis";
+                            repeat = "paralysis";
+                        } else {
+                            rollAgain = true;
+                        }
                     } else {
-                        a = "Blindness";
+                        if (!repeat.equals("blindness")) {
+                            a = "Blindness";
+                            repeat = "blindness";
+                        } else {
+                            rollAgain = true;
+                        }
                     }
 
                     System.out.println("You notice some mushrooms surround you and release harmful spores, as you now have the " + a + " condition!");
                     player.setCondition(a);
-                } else if (fx == 2) { // summon lillies / mushrooms
+                } else if (fx == 2) { // summon lilies / mushrooms
                     if ((int) (Math.random() * 1) + 1 == 1) {
-                        System.out.println("Ill implement the lillies l8r.");
+                        System.out.println("Ill implement the lilies l8r.");
                         memorial.summonLillies();
                     } else {
                         System.out.println("Ill implement the mushrooms l8r.");
                         memorial.summonMushrooms();
                     }
                 }
-                twice++;
+                if (rollAgain) {
+                    twice--;
+                } else {
+                    twice++;
+                }
             }
         }
     }
@@ -643,6 +670,7 @@ public class BlightFight {
             e += "\nMemorial Status: Harmful plants begin to surround you with the Blight's presence.";
         } else {
             e += "\nMemorial status: The forest rages against you, with every step you make on its soil a threat to your life.";
+            e += Colors.RED + "\nThe memorial now attacks twice!" + Colors.RESET;
         }
 
         return e;

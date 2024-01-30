@@ -153,7 +153,7 @@ public class Blight {
             }
 
             if (spellList[whichSpell].getEffect() != null) { // if it has an effect
-                if ((int) (Math.random() * 100) + 1 <= 33) { // 50% chance to apply the effect
+                if ((int) (Math.random() * 100) + 1 <= 33) { // 33% chance to apply the effect
                     if (player.wheresCondition(spellList[whichSpell].getEffect()) == -1) { // if the condition isnt already there
                         System.out.println("The spell applies the " + spellList[whichSpell].getEffect() + " condition onto you!");
                         player.setCondition(spellList[whichSpell].getEffect());
