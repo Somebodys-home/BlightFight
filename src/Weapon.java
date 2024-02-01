@@ -103,7 +103,7 @@ public class Weapon {
             } else {
                 if ((int) (Math.random() * 100) >= dodgeAgainst) {
                     if (affectedByWeakness) {
-                        System.out.println("Despite the fatigue you feel throughout your body, you hit the blight for " + damageRoll / 2 + " damage." );
+                        System.out.println("Despite the fatigue, you hit the blight for " + damageRoll / 2 + " damage." );
                         totalDamage += damageRoll / 2;
                     } else {
                          System.out.println("You hit the blight for " + damageRoll + " damage!" );

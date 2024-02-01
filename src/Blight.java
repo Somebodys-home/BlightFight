@@ -6,7 +6,7 @@ public class Blight {
     }
     private Player player;
     private int blightHealth = 180;
-    private int blightDodge = 2;
+    private int blightDodge = 10;
     Spell[] spellList = {new Spell("Poison Spray", 2, 6),
             new Spell("Thunderwave", 1, 10, "Paralysis"),
             new Spell("Ray of Waste", 2, 4, "Weakness"),
@@ -20,16 +20,9 @@ public class Blight {
     private int spellDamage;
     private boolean antilifeShell = false;
     private int antilifeCounter = -1;
+
     public void setBlightHealth(int blightHealth) {
         this.blightHealth = blightHealth;
-    }
-
-    public void setAntilifeCounter(int antilifeCounter) {
-        this.antilifeCounter = antilifeCounter;
-    }
-
-    public void setAntilifeShell(boolean antilifeShell) {
-        this.antilifeShell = antilifeShell;
     }
 
     public boolean isAntilifeShell() {
@@ -39,11 +32,17 @@ public class Blight {
     public int getBlightHealth() {
         return blightHealth;
     }
+
     public int getBlightDodge() {
         return blightDodge;
     }
+
     public void setBlightDodge(int blightDodge) {
         this.blightDodge = blightDodge;
+    }
+
+    public void revertBlightDodge() {
+        blightDodge = 10;
     }
 
     public int getSpellDamage() {
@@ -169,18 +168,9 @@ public class Blight {
                     System.out.println("The blight casts " + spellList[whichSpell].getName() + ", applying the " + spellList[whichSpell].getEffect() + " condition onto you!");
                     player.setCondition(spellList[whichSpell].getEffect());
                     return;
-
-//                    if (spellList[whichSpell].getName().equals("Sleet storm")) {
-//                        player.setCondition("Blindness");
-//                        return;
-//                    } else {
-//
-//                    }
-
                 } else {
                     System.out.println("The blight casts " + spellList[whichSpell].getName() + ", which would apply the " + spellList[whichSpell].getEffect() + " condition onto you, but you already have it.");
                 }
-
 
             } else if (spellList[whichSpell].getName().equals("Cure wounds")) { // cure wounds
                 System.out.println("The blight casts Cure wounds, healing itself for 30 health!");
@@ -189,6 +179,13 @@ public class Blight {
                 antilifeShell = true;
                 antilifeCounter = 5;
             }
+        }
+    }
+    public boolean hasSpellDamage(int whichSpell) {
+        if (spellList[whichSpell].getNumOfDice() > 0) {
+            return true;
+        } else {
+            return false;
         }
     }
     public void updateAntilifeCounter() {

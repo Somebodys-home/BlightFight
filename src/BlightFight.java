@@ -13,11 +13,13 @@ public class BlightFight {
     private int currentBlightHealth;
     private boolean blightHasAttacked = false;
     private Memorial memorial; // memorial variables
-    private Lillies lillies;
-    private boolean lilliesAlive = false;
+    private Lilies lilies; // lilies
+    private boolean liliesAlive = false;
+    private int lilyCount = 0;
     private Mushrooms mushrooms;
     private boolean mushroomsAlive = false;
-    private int leafShieldCount;
+    private int mushroomCount = 0;
+    private int leafShieldCount = -1;
     private String stage = "1";
     public BlightFight() {}
 
@@ -35,7 +37,7 @@ public class BlightFight {
         currentConditions = player.getConditions();
         blight = new Blight(player);
         currentBlightHealth = blight.getBlightHealth();
-        memorial = new Memorial(player, blight, lillies, mushrooms);
+        memorial = new Memorial(player, blight, lilies, mushrooms);
 
         System.out.println("Select your weapon out of these three: (type \"sword\", \"chakrams\", or \"scythe\")");
         System.out.println("-----LONGSWORD------");
@@ -51,8 +53,8 @@ public class BlightFight {
         System.out.println("Dodge chance: 20%");
         System.out.println();
         System.out.println(Colors.RED + "-----GREAT SCYTHE-----");
-        System.out.println("Minium damage: 20");
-        System.out.println("Maximum damage: 35");
+        System.out.println("Minium damage: 25");
+        System.out.println("Maximum damage: 30");
         System.out.println("Number of attacks: 1");
         System.out.println("Dodge chance: 10%" + Colors.RESET);
 
@@ -74,8 +76,8 @@ public class BlightFight {
             System.out.println("Dodge chance: 20%");
             System.out.println();
             System.out.println(Colors.RED + "-----GREAT SCYTHE-----");
-            System.out.println("Minium damage: 20");
-            System.out.println("Maximum damage: 35");
+            System.out.println("Minium damage: 25");
+            System.out.println("Maximum damage: 30");
             System.out.println("Number of attacks: 1");
             System.out.println("Dodge chance: 10%" + Colors.RESET);
 
@@ -96,8 +98,8 @@ public class BlightFight {
             System.out.println("Dodge chance: 20%");
             System.out.println();
             System.out.println(Colors.RED + "-----GREAT SCYTHE-----");
-            System.out.println("Minium damage: 20");
-            System.out.println("Maximum damage: 35");
+            System.out.println("Minium damage: 25");
+            System.out.println("Maximum damage: 30");
             System.out.println("Number of attacks: 1");
             System.out.println("Dodge chance: 10%" + Colors.RESET);
 
@@ -108,16 +110,16 @@ public class BlightFight {
         } else if (weaponChoice.equals("chakrams")) {
             playersWeapon = new Weapon("Dual chakrams", 5, 10, 3, 20, player);
         } else if (weaponChoice.equals("scythe")) {
-            playersWeapon = new Weapon("Great scythe", 20, 35, 1, 10, player);
+            playersWeapon = new Weapon("Great scythe", 25, 30, 1, 10, player);
         }
         turnCount = 2;
         lore();
     }
 
     public void lore() {
-        System.out.println("Context: What you're about to face is what's called a blight: (Press any key to continue)");
+        System.out.println("Context: What you're about to face is what's called a blight: (Press enter to continue)");
         String a = scan.nextLine();
-        System.out.println("A druidic lich, essentially. (Press any key to continue)");
+        System.out.println("A druidic lich, essentially. (Press enter to continue)");
         a = scan.nextLine();
         System.out.println("You're an adventurer, one that has proven their bark and bite, as you have risen to enough power to face this undead paragon of nature.");
         a = scan.nextLine();
@@ -132,9 +134,9 @@ public class BlightFight {
         System.out.print("Are you ready to face the embodiment of nature itself? (Spoiler Alert: Your answer doesn't matter, free choice is a myth.)");
         a = scan.nextLine();
 
-        lillies = new Lillies(blight, memorial);
+        lilies = new Lilies(blight, memorial);
         mushrooms = new Mushrooms(blight, memorial);
-        memorial = new Memorial(player, blight, lillies, mushrooms);
+        memorial = new Memorial(player, blight, lilies, mushrooms);
 
         stage1();
     }
@@ -207,9 +209,14 @@ public class BlightFight {
                     applyMemorialEffects();
                     turnCount = 0;
                 }
-                if (currentPlayerHealth <= 0) {
-                    System.out.println(Colors.RED + "You've succumbed to the druidic attacks, becoming one with the blight and it's homogenous memorial.");
-                    return;
+                if (leafShieldCount > 0) {
+                    leafShieldCount--;
+
+                    if (leafShieldCount == 0) {
+                        System.out.println(Colors.YELLOW + "The blight's shield falls!" + Colors.RESET);
+                        blight.revertBlightDodge();
+                        leafShieldCount = -1;
+                    }
                 }
                 player.failCase();
                 turnCount++;
@@ -217,17 +224,29 @@ public class BlightFight {
             playersTurn = !playersTurn;
             blightHasAttacked = false;
         }
+        if (currentPlayerHealth <= 0) {
+            System.out.println(Colors.RED + "You've succumbed to the druidic attacks, becoming one with the blight and it's homogenous memorial.");
+            return;
+        }
         if (currentBlightHealth <= 0) {
-            System.out.println("\n");
+            if (leafShieldCount > 0) {
+                leafShieldCount--;
+
+                if (leafShieldCount == 0) {
+                    System.out.println(Colors.YELLOW + "The blight's shield falls!" + Colors.RESET);
+                    blight.revertBlightDodge();
+                    leafShieldCount = -1;
+                }
+            }
             System.out.println(Colors.YELLOW + "You've bested the blight!" + Colors.RESET);
         }
         stage2confirm();
     }
 
     public void stage2confirm() {
-        System.out.println("Whoops, I forgot to tell you a bunch.");
+        System.out.println("Whoops, I forgot to tell you a bunch. (Press enter to continue.)");
         String confirm = scan.nextLine();
-        System.out.println("An important thing about blights are their death bloom.");
+        System.out.println("An important thing about blights are their death bloom. (Press enter to continue.)");
         confirm = scan.nextLine();
         System.out.println("A death bloom is a flower that spawns wherever a druid finishes their transformation into a blight.");
         confirm = scan.nextLine();
@@ -247,24 +266,25 @@ public class BlightFight {
         confirm = scan.nextLine();
         System.out.println("However, because the blight hasn't has a good challenge for a couple centuries, they give you a boon!");
         playersWeapon.upgradeWeapon();
-        System.out.print("\nPress any button when you're ready to face the blight again.");
+        System.out.print("\nPress enter when you're ready to face the blight again.");
         confirm = scan.nextLine();
         blight.setBlightHealth(230);
         currentBlightHealth = blight.getBlightHealth();
         player.reset();
+        currentPlayerHealth = 150;
         stage2();
     }
 
     public void stage2() {
         boolean playersTurn = true;
         boolean alreadyHealed = false;
+
         while (currentPlayerHealth > 0 && currentBlightHealth > 0) {
             if (playersTurn) {
                 previousConditions = new String[currentConditions.length];
                 for (int i = 0; i < previousConditions.length; i++) {
                     previousConditions[i] = currentConditions[i];
                 }
-                currentPlayerHealth = player.getHealth();
                 System.out.println("\nThe blight challenges you to another bout, now deadlier than the last.");
                 System.out.println("[ Attack ]");
                 System.out.println("[ Drink Health Potion ]");
@@ -318,13 +338,18 @@ public class BlightFight {
                 }
             } else { // blight's turn
                 blightAttack2();
-                if (currentPlayerHealth <= 0) {
-                    System.out.println(Colors.RED + "You've succumbed to the druidic attacks, becoming one with the blight and it's homogenous memorial.");
-                    return;
-                }
-                if (turnCount % 3 == 0) {
+                if (turnCount % 4 == 0) {
                     applyMemorialEffects();
                     turnCount = 0;
+                }
+                if (leafShieldCount > 0) {
+                    leafShieldCount--;
+
+                    if (leafShieldCount == 0) {
+                        System.out.println(Colors.YELLOW + "The blight's shield falls!" + Colors.RESET);
+                        blight.revertBlightDodge();
+                        leafShieldCount = -1;
+                    }
                 }
                 player.updateConditions();
                 player.updateConditionArray();
@@ -334,6 +359,22 @@ public class BlightFight {
             blightHasAttacked = false;
         }
         player.failCase();
+        if (currentPlayerHealth <= 0) {
+            System.out.println(Colors.RED + "You've succumbed to the druidic attacks, becoming one with the blight and it's homogenous memorial.");
+            return;
+        }
+        if (currentBlightHealth <= 0) {
+            if (leafShieldCount > 0) {
+                leafShieldCount--;
+
+                if (leafShieldCount == 0) {
+                    System.out.println(Colors.YELLOW + "The blight's shield falls!" + Colors.RESET);
+                    blight.revertBlightDodge();
+                    leafShieldCount = -1;
+                }
+            }
+            System.out.println(Colors.YELLOW + "You've bested the blight!" + Colors.RESET);
+        }
         stage3confirm();
     }
 
@@ -341,9 +382,10 @@ public class BlightFight {
         blight.setBlightHealth(300);
         currentBlightHealth = blight.getBlightHealth();
         player.reset();
-        System.out.println("Cutting down the blight again, it turns into another pile of leaves. Huh.");
+        currentPlayerHealth = 150;
+        System.out.println("Just like last time, the blight turns into another pile of leaves as it falls.");
         String confirm = scan.nextLine();
-        System.out.println("As soon as the blight falls, a flower blooms under you that replenishes your health and upgrades your weapon.");
+        System.out.println("As soon as it does, a flower blooms under you that replenishes your health and upgrades your weapon.");
         playersWeapon.upgradeWeapon();
         confirm = scan.nextLine();
         System.out.println("As you trek through the memorial, for another five miles to be exact, you encounter a growing figure made of bark, wood, foliage, moss and leaves.");
@@ -375,7 +417,7 @@ public class BlightFight {
                 for (int i = 0; i < previousConditions.length; i++) {
                     previousConditions[i] = currentConditions[i];
                 }
-                currentPlayerHealth = player.getHealth();
+
                 System.out.println("\nYou already know what to do.");
                 System.out.println("[ Attack ]");
                 System.out.println("[ Drink Health Potion ]");
@@ -396,26 +438,26 @@ public class BlightFight {
 
                 if (userChoice.equals("a")) { // attack
                     String memorialTargets = "";
-                    if (lilliesAlive && mushroomsAlive) { // if lilies / mushrooms are alive
-                        System.out.println("What do you want to target? (Type either \"blight\", \"lilies\", or \"mushrooms\"");
+                    if (liliesAlive && mushroomsAlive) { // if lilies / mushrooms are alive
+                        System.out.println("What do you want to target? (Type either \"blight\", \"lilies\", or \"mushrooms\")");
                         System.out.println("[ Blight ]");
                         System.out.println("[ Lilies ]");
                         System.out.println("[ Mushrooms ]");
 
                         memorialTargets = scan.nextLine();
-                    } else if (lilliesAlive && !mushroomsAlive) {
-                        System.out.println("What do you want to target? (Type either \"blight\" or \"lilies\"");
+                    } else if (liliesAlive && !mushroomsAlive) {
+                        System.out.println("What do you want to target? (Type either \"blight\" or \"lilies\")");
                         System.out.println("[ Blight ]");
                         System.out.println("[ Lilies ]");
 
                         memorialTargets = scan.nextLine();
-                    } else if (!lilliesAlive && mushroomsAlive) {
-                        System.out.println("What do you want to target? (Type either \"blight\" or \"mushrooms\"");
+                    } else if (!liliesAlive && mushroomsAlive) {
+                        System.out.println("What do you want to target? (Type either \"blight\" or \"mushrooms\")");
                         System.out.println("[ Blight ]");
                         System.out.println("[ Mushrooms ]");
 
                         memorialTargets = scan.nextLine();
-                    } else if (!lilliesAlive && !mushroomsAlive) {
+                    } else if (!liliesAlive && !mushroomsAlive) {
                         playersWeapon.makeAttack(blight.getBlightDodge());
                         currentBlightHealth -= playersWeapon.getTotalDamage();
                         if (currentBlightHealth <= 0 && blight.isAntilifeShell()) {
@@ -424,10 +466,17 @@ public class BlightFight {
                         }
                     }
 
-                    if (memorialTargets.equals("lillies")) {
-                        memorial.damageLillies(playersWeapon.getTotalDamage());
+                    if (memorialTargets.equals("lilies")) {
+                        damageLillies(playersWeapon.getTotalDamage());
                     } else if (memorialTargets.equals("mushrooms")) {
-                        memorial.damageMushrooms(playersWeapon.getTotalDamage());
+                        damageMushrooms(playersWeapon.getTotalDamage());
+                    } else if (memorialTargets.equals("blight")) {
+                        playersWeapon.makeAttack(blight.getBlightDodge());
+                        currentBlightHealth -= playersWeapon.getTotalDamage();
+                        if (currentBlightHealth <= 0 && blight.isAntilifeShell()) {
+                            System.out.println("The blight's antilife shell protects it from death!");
+                            currentBlightHealth = 50;
+                        }
                     }
 
                 } else if (userChoice.equals("pot")) { // heal
@@ -462,16 +511,22 @@ public class BlightFight {
                 }
             } else { // blight's turn
                 blightAttack3();
-                if (currentPlayerHealth <= 0) {
-                    System.out.println(Colors.RED + "You've succumbed to the druidic attacks, becoming one with the blight and it's homogenous memorial.");
-                    return;
-                }
                 if (turnCount % 3 == 0) {
                     applyMemorialEffects();
                     turnCount = 0;
                 }
+                if (leafShieldCount > 0) {
+                    leafShieldCount--;
+
+                    if (leafShieldCount == 0) {
+                        System.out.println(Colors.YELLOW + "The blight's shield falls!" + Colors.RESET);
+                        blight.revertBlightDodge();
+                        leafShieldCount = -1;
+                    }
+                }
                 blight.updateAntilifeCounter();
                 lilyHeal();
+                checkSummons();
                 player.updateConditions();
                 player.updateConditionArray();
                 turnCount++;
@@ -479,6 +534,22 @@ public class BlightFight {
             playersTurn = !playersTurn;
             blightHasAttacked = false;
             player.failCase();
+        }
+        if (currentPlayerHealth <= 0) {
+            System.out.println(Colors.RED + "You've succumbed to the druidic attacks, becoming one with the blight and it's homogenous memorial.");
+            return;
+        }
+        if (currentBlightHealth <= 0) {
+            if (leafShieldCount > 0) {
+                leafShieldCount--;
+
+                if (leafShieldCount == 0) {
+                    System.out.println(Colors.YELLOW + "The blight's shield falls!" + Colors.RESET);
+                    blight.revertBlightDodge();
+                    leafShieldCount = -1;
+                }
+            }
+            System.out.println(Colors.YELLOW + "You've bested the blight!" + Colors.RESET);
         }
         // insert ending here
     }
@@ -520,11 +591,16 @@ public class BlightFight {
         int percent = (int) (Math.random() * 100) + 1;
         if (!blightHasAttacked) {
             if (percent <= 10) { // 10% eq or als
-                blight.castspell3((int) (Math.random() + 1) + 7, playersWeapon.getDodge());
+                int a = (int) (Math.random() + 1) + 7;
+
+                blight.castspell3(a, playersWeapon.getDodge());
                 currentPlayerHealth -= blight.getSpellDamage();
+
+                LSD(a);
             } else if (percent <= 30) { // 20% cl or cw
                 if ((int) (Math.random() * 99) + 1 <= 50) { // cl
                     blight.castSpell1(3, playersWeapon.getDodge());
+                    LSD(3);
                 } else { // cw
                     blight.castspell3(5, playersWeapon.getDodge());
                     currentBlightHealth += 30;
@@ -533,13 +609,18 @@ public class BlightFight {
                     }
                 }
             } else if (percent <= 50) { // 30% chance to cast orginal 3
-                blight.castSpell1((int) (Math.random() * 3), playersWeapon.getDodge());
+                int a = (int) (Math.random() * 3);
+
+                blight.castSpell1(a, playersWeapon.getDodge());
                 currentPlayerHealth -= blight.getSpellDamage();
+                LSD(a);
             } else { // 50% chance to cast mb or ss
                 if ((int) (Math.random() * 99) + 1 <= 50) { // mb
                     blight.castspell3(6, playersWeapon.getDodge());
+                    LSD(6);
                 } else { // ss
                     blight.castspell3(4, playersWeapon.getDodge());
+                    LSD(4);
                 }
             }
         }
@@ -551,7 +632,7 @@ public class BlightFight {
             if (fx == 0) { // leaf shield
                 System.out.println("You look around as moss and foliage wrap around the blight, increasing it's defences!");
                 blight.setBlightDodge(25);
-                leafShieldCount = 2;
+                leafShieldCount = 4;
             } else if (fx == 1) { // spore swarm
                 String a = "";
 
@@ -576,7 +657,7 @@ public class BlightFight {
                     if (!repeat.equals("leaf")) {
                         System.out.println("You look around as moss and foliage wrap around the blight, increasing it's defences!");
                         blight.setBlightDodge(30);
-                        leafShieldCount = 2;
+                        leafShieldCount = 6;
                         repeat = "leaf";
                     } else {
                         rollAgain = true;
@@ -612,15 +693,14 @@ public class BlightFight {
                     player.setCondition(a);
                 } else if (fx == 2) { // summon lilies / mushrooms
                     if ((int) (Math.random() * 1) + 1 == 1) {
-                        System.out.println("Ill implement the lilies l8r.");
-                        memorial.summonLillies();
+                        summonLillies();
                     } else {
-                        System.out.println("Ill implement the mushrooms l8r.");
-                        memorial.summonMushrooms();
+                        summonMushrooms();
                     }
                 }
                 if (rollAgain) {
                     twice--;
+                    rollAgain = false;
                 } else {
                     twice++;
                 }
@@ -628,14 +708,6 @@ public class BlightFight {
         }
     }
 
-    public void lilyHeal() {
-        if (lilliesAlive) {
-            currentBlightHealth += lillies.getLilyCount() * 2;
-            System.out.println("The lilies on the battlefield heal the blight for " + lillies.getLilyCount() * 2 + " health!");
-        } else {
-            return;
-        }
-    }
     public String playerStats() {
         StringBuilder conditionsString = new StringBuilder();
         for (String condition : player.getConditions()) {
@@ -666,6 +738,10 @@ public class BlightFight {
             e = "Blight status: Weak";
         }
 
+        if (leafShieldCount > 0) {
+            e += Colors.GREEN + " + Shield active!" + Colors.RESET;
+        }
+
         if (stage.equals("1") || stage.equals("2")) {
             e += "\nMemorial Status: Harmful plants begin to surround you with the Blight's presence.";
         } else {
@@ -674,5 +750,69 @@ public class BlightFight {
         }
 
         return e;
+    }
+    // stuff for memorial summons spefically
+    // lilies
+    public void summonLillies() {
+        lilyCount += 5;
+        liliesAlive = true;
+        System.out.println(Colors.CYAN + "5 lilies appear around the blight!" + Colors.RESET);
+    }
+
+    public void damageLillies(int damage) {
+        int liliesKilled = 0;
+        while (liliesKilled < 5 && damage >= 5) {
+            damage -= 5;
+            liliesKilled++;
+            System.out.println("You kill a lily!");
+        }
+        lilyCount -= liliesKilled;
+    }
+
+    public void lilyHeal() {
+        if (liliesAlive) {
+            currentBlightHealth += lilyCount;
+            System.out.println(Colors.GREEN + "The lilies on the battlefield heal the blight for " + lilyCount + " health!" + Colors.RESET);
+        } else {
+            return;
+        }
+    }
+
+    // shrooms
+    public void summonMushrooms() {
+        mushroomCount += 2;
+        mushroomsAlive = true;
+        System.out.println(Colors.PURPLE + "2 mushrooms appear around the blight!" + Colors.RESET);
+    }
+
+    public void damageMushrooms(int damage) {
+        int shroomsKilled = 0;
+        while (shroomsKilled < 5 && damage >= 5) {
+            damage -= 5;
+            shroomsKilled++;
+            System.out.println("You kill a mushroom!");
+        }
+        mushroomCount -= shroomsKilled;
+    }
+
+    public void LSD(int a) {
+        if (blight.hasSpellDamage(a) && mushroomsAlive) {
+            System.out.println(Colors.PURPLE + "The mushrooms apply an extra " + mushroomCount * 3 + " damage to the blight's attack!" + Colors.RESET);
+            currentPlayerHealth -= mushroomCount * 3;
+        } else {
+            return;
+        }
+    }
+
+    public void checkSummons() {
+        if (lilyCount <= 0) {
+            liliesAlive = false;
+            lilyCount = 0;
+        }
+
+        if (mushroomCount <= 0) {
+            mushroomsAlive = false;
+            mushroomCount = 0;
+        }
     }
 }

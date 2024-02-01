@@ -139,7 +139,6 @@ public class Player {
         }
     }
     public void reset() {
-        health = 150;
         conditions = new String[] {"-", "-", "-", "-"};
         updateConditionArray();
         updateConditionHyphens();
