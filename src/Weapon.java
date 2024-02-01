@@ -9,19 +9,11 @@ public class Weapon {
     private int totalDamage;
     private boolean affectedByParalysis = false;
     private boolean affectedByWeakness = false;
-
     private boolean affectedByBlindness = false;
+    private boolean deflected = false;
 
-    public void setAffectedByParalysis(boolean affectedByParalysis) {
-        this.affectedByParalysis = affectedByParalysis;
-    }
-
-    public void setAffectedByWeakness(boolean affectedByWeakness) {
-        this.affectedByWeakness = affectedByWeakness;
-    }
-
-    public void setAffectedByBlindness(boolean affectedByBlindness) {
-        this.affectedByBlindness = affectedByBlindness;
+    public boolean isDeflected() {
+        return deflected;
     }
 
     public String getWeaponName() {
@@ -60,6 +52,10 @@ public class Weapon {
         return totalDamage;
     }
 
+    public boolean isAffectedByParalysis() {
+        return affectedByParalysis;
+    }
+
     public Weapon(String weaponName, int minimumDamage, int maximumDamage, int numberOfAttacks, int dodge, Player player) {
         this.weaponName = weaponName;
         this.minimumDamage = minimumDamage;
@@ -72,6 +68,7 @@ public class Weapon {
 
     public void makeAttack(int dodgeAgainst) {
         totalDamage = 0;
+        deflected = false;
 
         if (player.wheresCondition("Weakness") != -1) { // checks if you have weakness
             affectedByWeakness = true;
@@ -111,6 +108,7 @@ public class Weapon {
                     }
                 } else {
                     System.out.println("The blight deflects your attack.");
+                    deflected = true;
                 }
             }
         }
@@ -118,13 +116,13 @@ public class Weapon {
     public void upgradeWeapon() {
         int upgradeStat = (int) (Math.random() * 3) + 1;
         if (upgradeStat == 1) {
-            int upgrademini = (getMinimumDamage() / 5) * 6;
-            System.out.println("The blight grants you a boon! Your minimum damage has increased to " + upgrademini + "!");
-            setMinimumDamage(upgrademini);
+            int upgrademini = (getMinimumDamage() / 5);
+            System.out.println("The blight grants you a boon! Your minimum damage has increased by " + upgrademini + "!");
+            setMinimumDamage(upgrademini + getMinimumDamage());
         } else if (upgradeStat == 2) {
-            int upgrademax = (getMaximumDamage() / 5) * 6;
-            setMaximumDamage(upgrademax);
-            System.out.println("The blight grants you a boon! Your maximum damage has increased to " + upgrademax + "!");
+            int upgrademax = (getMaximumDamage() / 5);
+            setMaximumDamage(upgrademax + getMaximumDamage());
+            System.out.println("The blight grants you a boon! Your maximum damage has increased by " + upgrademax + "!");
         } else if (upgradeStat == 3) {
             int upgradedodge = (int) (Math.random() * 15) + 5;
             setDodge(getDodge() + upgradedodge);

@@ -285,7 +285,7 @@ public class BlightFight {
                 for (int i = 0; i < previousConditions.length; i++) {
                     previousConditions[i] = currentConditions[i];
                 }
-                System.out.println("\nThe blight challenges you to another bout, now deadlier than the last.");
+                System.out.println("\nThe blight challenges you to another bout, now deadlier than the last. (Type either a, pot, ps, bs)");
                 System.out.println("[ Attack ]");
                 System.out.println("[ Drink Health Potion ]");
                 System.out.println("[ Check Player Stats ]");
@@ -437,22 +437,25 @@ public class BlightFight {
                 }
 
                 if (userChoice.equals("a")) { // attack
+                    if (player.wheresCondition("Paralysis") > -1) {
+
+                    }
                     String memorialTargets = "";
                     if (liliesAlive && mushroomsAlive) { // if lilies / mushrooms are alive
-                        System.out.println("What do you want to target? (Type either \"blight\", \"lilies\", or \"mushrooms\")");
+                        System.out.println("What do you want to target? (Type either \"blight\", \"lilies\", or \"mushrooms\")" + Colors.RED + " MISTYPE = TURN SKIP!" + Colors.RESET);
                         System.out.println("[ Blight ]");
                         System.out.println("[ Lilies ]");
                         System.out.println("[ Mushrooms ]");
 
                         memorialTargets = scan.nextLine();
                     } else if (liliesAlive && !mushroomsAlive) {
-                        System.out.println("What do you want to target? (Type either \"blight\" or \"lilies\")");
+                        System.out.println("What do you want to target? (Type either \"blight\" or \"lilies\")" + Colors.RED + " MISTYPE = TURN SKIP!" + Colors.RESET);
                         System.out.println("[ Blight ]");
                         System.out.println("[ Lilies ]");
 
                         memorialTargets = scan.nextLine();
                     } else if (!liliesAlive && mushroomsAlive) {
-                        System.out.println("What do you want to target? (Type either \"blight\" or \"mushrooms\")");
+                        System.out.println("What do you want to target? (Type either \"blight\" or \"mushrooms\")" + Colors.RED + " MISTYPE = TURN SKIP!" + Colors.RESET);
                         System.out.println("[ Blight ]");
                         System.out.println("[ Mushrooms ]");
 
@@ -466,16 +469,21 @@ public class BlightFight {
                         }
                     }
 
-                    if (memorialTargets.equals("lilies")) {
-                        damageLillies(playersWeapon.getTotalDamage());
-                    } else if (memorialTargets.equals("mushrooms")) {
-                        damageMushrooms(playersWeapon.getTotalDamage());
-                    } else if (memorialTargets.equals("blight")) {
-                        playersWeapon.makeAttack(blight.getBlightDodge());
-                        currentBlightHealth -= playersWeapon.getTotalDamage();
-                        if (currentBlightHealth <= 0 && blight.isAntilifeShell()) {
-                            System.out.println("The blight's antilife shell protects it from death!");
-                            currentBlightHealth = 50;
+                    if (playersWeapon.isAffectedByParalysis()) {
+                        System.out.println("You feel your muscles stiffen as you swing, impeding your attack.");
+                    } else {
+                        if (memorialTargets.equals("lilies")) {
+                            damageLillies(playersWeapon.getTotalDamage());
+                        } else if (memorialTargets.equals("mushrooms")) {
+                            damageMushrooms(playersWeapon.getTotalDamage());
+                        } else if (memorialTargets.equals("blight")) {
+                            playersWeapon.makeAttack(blight.getBlightDodge());
+                            currentBlightHealth -= playersWeapon.getTotalDamage();
+                            LSD();
+                            if (currentBlightHealth <= 0 && blight.isAntilifeShell()) {
+                                System.out.println("The blight's antilife shell protects it from death!");
+                                currentBlightHealth = 50;
+                            }
                         }
                     }
 
@@ -591,16 +599,14 @@ public class BlightFight {
         int percent = (int) (Math.random() * 100) + 1;
         if (!blightHasAttacked) {
             if (percent <= 10) { // 10% eq or als
-                int a = (int) (Math.random() + 1) + 7;
+                int a = (int) (Math.random() * 2) + 7;
 
                 blight.castspell3(a, playersWeapon.getDodge());
                 currentPlayerHealth -= blight.getSpellDamage();
 
-                LSD(a);
             } else if (percent <= 30) { // 20% cl or cw
                 if ((int) (Math.random() * 99) + 1 <= 50) { // cl
                     blight.castSpell1(3, playersWeapon.getDodge());
-                    LSD(3);
                 } else { // cw
                     blight.castspell3(5, playersWeapon.getDodge());
                     currentBlightHealth += 30;
@@ -613,14 +619,11 @@ public class BlightFight {
 
                 blight.castSpell1(a, playersWeapon.getDodge());
                 currentPlayerHealth -= blight.getSpellDamage();
-                LSD(a);
             } else { // 50% chance to cast mb or ss
                 if ((int) (Math.random() * 99) + 1 <= 50) { // mb
                     blight.castspell3(6, playersWeapon.getDodge());
-                    LSD(6);
                 } else { // ss
                     blight.castspell3(4, playersWeapon.getDodge());
-                    LSD(4);
                 }
             }
         }
@@ -660,39 +663,41 @@ public class BlightFight {
                         leafShieldCount = 6;
                         repeat = "leaf";
                     } else {
-                        rollAgain = true;
+                        fx = 1;
                     }
-                } else if (fx == 1) { // spore swarm BUT BLINDNESS
-                    String a = "";
+                } else if (fx == 1) { // spore swarm + blindness
                     int b = (int) (Math.random() * 3) + 1;
 
                     if (b == 1) {
                         if (!repeat.equals("weakness")) {
-                            a = "Weakness";
                             repeat = "weakness";
+                            System.out.println("You notice some mushrooms surround you and release harmful spores, as you now have the Weakness condition!");
+                            player.setCondition("Weakness");
                         } else {
-                            rollAgain = true;
+                            b = 2;
                         }
                     } else if (b == 2) {
                         if (!repeat.equals("paralysis")) {
-                            a = "Paralysis";
                             repeat = "paralysis";
+                            System.out.println("You notice some mushrooms surround you and release harmful spores, as you now have the Paralysis condition!");
+                            player.setCondition("Paralysis");
                         } else {
-                            rollAgain = true;
+                            b = 3;
                         }
                     } else {
                         if (!repeat.equals("blindness")) {
-                            a = "Blindness";
                             repeat = "blindness";
+                            System.out.println("You notice some mushrooms surround you and release harmful spores, as you now have the Blindness condition!");
+                            player.setCondition("Blindness");
                         } else {
-                            rollAgain = true;
+                            repeat = "weakness";
+                            System.out.println("You notice some mushrooms surround you and release harmful spores, as you now have the Weakness condition!");
+                            player.setCondition("Weakness");
                         }
                     }
 
-                    System.out.println("You notice some mushrooms surround you and release harmful spores, as you now have the " + a + " condition!");
-                    player.setCondition(a);
                 } else if (fx == 2) { // summon lilies / mushrooms
-                    if ((int) (Math.random() * 1) + 1 == 1) {
+                    if ((int) (Math.random() * 2) == 0) {
                         summonLillies();
                     } else {
                         summonMushrooms();
@@ -760,19 +765,17 @@ public class BlightFight {
     }
 
     public void damageLillies(int damage) {
-        int liliesKilled = 0;
-        while (liliesKilled < 5 && damage >= 5) {
+        while (lilyCount > 0 && damage >= 5) {
             damage -= 5;
-            liliesKilled++;
             System.out.println("You kill a lily!");
+            lilyCount -= 1;
         }
-        lilyCount -= liliesKilled;
     }
 
     public void lilyHeal() {
-        if (liliesAlive) {
-            currentBlightHealth += lilyCount;
-            System.out.println(Colors.GREEN + "The lilies on the battlefield heal the blight for " + lilyCount + " health!" + Colors.RESET);
+        if (lilyCount > 0) {
+            currentBlightHealth += (int) (lilyCount * .9);
+            System.out.println(Colors.GREEN + "The lilies on the battlefield heal the blight for " + (int) (lilyCount * .7) + " health!" + Colors.RESET);
         } else {
             return;
         }
@@ -786,19 +789,22 @@ public class BlightFight {
     }
 
     public void damageMushrooms(int damage) {
-        int shroomsKilled = 0;
-        while (shroomsKilled < 5 && damage >= 5) {
-            damage -= 5;
-            shroomsKilled++;
+        while (mushroomCount > 0 && damage >= 10) {
+            damage -= 10;
             System.out.println("You kill a mushroom!");
+            mushroomCount -= 1;
         }
-        mushroomCount -= shroomsKilled;
     }
 
-    public void LSD(int a) {
-        if (blight.hasSpellDamage(a) && mushroomsAlive) {
-            System.out.println(Colors.PURPLE + "The mushrooms apply an extra " + mushroomCount * 3 + " damage to the blight's attack!" + Colors.RESET);
-            currentPlayerHealth -= mushroomCount * 3;
+    public void LSD() {
+        if (mushroomsAlive && !playersWeapon.isDeflected()) {
+            if (playersWeapon.getTotalDamage() < mushroomCount * 3 && playersWeapon.getTotalDamage() > 0) {
+                System.out.println(Colors.PURPLE + "The mushrooms shield the blight from " + playersWeapon.getTotalDamage() + " damage!" + Colors.RESET);
+                currentBlightHealth += playersWeapon.getTotalDamage();
+            } else {
+                System.out.println(Colors.PURPLE + "The mushrooms shield the blight from " + mushroomCount * 3 + " damage! " + Colors.RESET);
+                currentBlightHealth += mushroomCount * 3;
+            }
         } else {
             return;
         }

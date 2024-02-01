@@ -9,10 +9,6 @@ public class Player {
 
     private int blindnessTimer = -1;
 
-    public int getHealth() {
-        return health;
-    }
-
     public void subtractHealth(int subtract) {
         health -= subtract;
     }

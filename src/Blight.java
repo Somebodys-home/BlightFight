@@ -136,7 +136,7 @@ public class Blight {
         spellDamage = 0;
 
         if (spellList[whichSpell].getNumOfDice() > 0) { // damaging spell
-            if ((int) (Math.random() * 100) + 1 > dodge && player.wheresCondition("Blindness") == -1) { // chance for player to dodge if they arent blinded
+            if ((int) (Math.random() * 100) + 1 > dodge && player.wheresCondition("Blindness") != -1 && player.wheresCondition("Paralysis") != -1) { // chance for player to dodge if they arent blinded
                 System.out.println("The blight casts " + spellList[whichSpell].getName() + ", but thankfullly you dodge out of the way!");
                 return;
             }
@@ -144,8 +144,8 @@ public class Blight {
             for (int i = 0; i < spellList[whichSpell].getNumOfDice(); i++) { // rolling damage
                 spellDamage += (int) (Math.random() * spellList[whichSpell].getDiceType()) + (spellList[whichSpell].getDiceType() / 2) + 1;
             }
-            if (player.wheresCondition("Blindnesss") != -1) {
-                System.out.println("A previous spell blocks your vision, allowing you to get hit by the blight's " + spellList[whichSpell].getName() + " for " + spellDamage + " damage!");
+            if (player.wheresCondition("Blindness") > -1) {
+                System.out.println("Because you're blinded, you get hit by the blight's " + spellList[whichSpell].getName() + " for " + spellDamage + " damage!");
             } else {
                 System.out.println("The blight casts " + spellList[whichSpell].getName() + " which hits you for " + spellDamage + " damage!");
                 player.subtractHealth(spellDamage);
@@ -177,7 +177,7 @@ public class Blight {
             } else if (spellList[whichSpell].getName().equals("Antilife shell")) { // antilife shell
                 System.out.println("The blight casts Antilife shell onto itself!");
                 antilifeShell = true;
-                antilifeCounter = 5;
+                antilifeCounter = 10;
             }
         }
     }
