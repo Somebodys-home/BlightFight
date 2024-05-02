@@ -14,13 +14,9 @@ public class BlightFight {
     private boolean blightHasAttacked = false;
     private Memorial memorial; // memorial variables
     private Lilies lilies; // lilies
-    private boolean liliesAlive = false;
-    private int lilyCount = 0;
     private Mushrooms mushrooms;
-    private boolean mushroomsAlive = false;
-    private int mushroomCount = 0;
     private int leafShieldCount = -1;
-    private String stage = "1";
+    private int stage = "1";
     public BlightFight() {}
 
     public void start() { // name and weapon choice

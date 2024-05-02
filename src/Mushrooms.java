@@ -1,29 +1,33 @@
-public class Mushrooms {
+import java.util.ArrayList;
+
+public class Mushrooms extends Entity {
     private Blight blight;
     private Memorial memorial;
+    private boolean mushroomsAlive = false;
+    private ArrayList<Mushrooms> mushroomsOnTheField;
+
     public Mushrooms(Blight blight, Memorial memorial) {
-    this.blight = blight;
-    this.memorial = memorial;
-    }
-    private int mushroomHealth = 25;
-    private int mushroomCount = 0;
-
-    public int getMushroomHealth() {
-        return mushroomHealth;
+        super("Mushrooms", 25);
+        this.blight = blight;
+        this.memorial = memorial;
+        checkIfAMushroomIsAlive();
     }
 
-    public int getMushroomCount() {
-        return mushroomCount;
+    public boolean checkIfAMushroomIsAlive() {
+        return !mushroomsOnTheField.isEmpty();
+    }
+    public void addMushroom(Mushrooms mushroom) { // NTS: use this whenever you make a new mushroom object
+        mushroomsOnTheField.add(mushroom);
     }
 
-    public void addMushrooms(int mushroomCount) {
-        this.mushroomCount += mushroomCount;
-    }
-    public void removeMushrooms(int mushroomCount) {
-        this.mushroomCount -= mushroomCount;
-    }
-
-    public void setMushroomHealth(int mushroomHealth) {
-        this.mushroomHealth = mushroomHealth;
+    public void damageMushrooms(int damage) {
+        int bodyCount = 0;
+        while (damage >= 25) {
+            damage--;
+            bodyCount++;
+        }
+        for (int i = bodyCount; i > 0; i--) {
+            mushroomsOnTheField.removeFirst();
+        }
     }
 }

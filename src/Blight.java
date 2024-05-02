@@ -1,12 +1,8 @@
-import java.util.SortedMap;
+public class Blight extends Entity {
+    private int spellDamage;
+    private boolean antilifeShell = false;
+    private int antilifeCounter = -1;
 
-public class Blight {
-    public Blight(Player player) {
-        this.player = player;
-    }
-    private Player player;
-    private int blightHealth = 180;
-    private int blightDodge = 10;
     Spell[] spellList = {new Spell("Poison Spray", 2, 6),
             new Spell("Thunderwave", 1, 10, "Paralysis"),
             new Spell("Ray of Waste", 2, 4, "Weakness"),
@@ -17,39 +13,19 @@ public class Blight {
             new Spell("Earthquake",4,10),
             new Spell("Antilife shell","Antilife shell")};
 
-    private int spellDamage;
-    private boolean antilifeShell = false;
-    private int antilifeCounter = -1;
-
-    public void setBlightHealth(int blightHealth) {
-        this.blightHealth = blightHealth;
+    public Blight(int health, int attack, int defense, int speed, int dodge) {
+        super("Blight", health, attack, defense, speed, dodge);
     }
 
     public boolean isAntilifeShell() {
         return antilifeShell;
     }
 
-    public int getBlightHealth() {
-        return blightHealth;
-    }
-
-    public int getBlightDodge() {
-        return blightDodge;
-    }
-
-    public void setBlightDodge(int blightDodge) {
-        this.blightDodge = blightDodge;
-    }
-
-    public void revertBlightDodge() {
-        blightDodge = 10;
-    }
-
     public int getSpellDamage() {
         return spellDamage;
     }
 
-    public void castSpell1(int whichSpell, int dodge) {
+    public void castSpellPhase1(int whichSpell, int dodge, Player player) { // todo: make this return an int
         spellDamage = 0;
 
          if (spellList[whichSpell].getNumOfDice() > 0) { // damaging spell
@@ -62,7 +38,7 @@ public class Blight {
                 spellDamage += (int) (Math.random() * spellList[whichSpell].getDiceType()) + (spellList[whichSpell].getDiceType() / 2) + 1;
             }
             System.out.println("The blight casts " + spellList[whichSpell].getName() + " which hits you for " + spellDamage + " damage!");
-            player.subtractHealth(spellDamage);
+            player.takeDamage(spellDamage);
 
              if (spellList[whichSpell].getEffect() != null) { // if it has an effect
                  if ((int) (Math.random() * 100) + 1 <= 33) { // 33% chance to apply the effect
@@ -84,7 +60,7 @@ public class Blight {
 
         }
     }
-    public void castspell2(int whichSpell, int dodge) {
+    public void castspellPhase2(int whichSpell, int dodge, Player player) { // todo: make this return an int
         spellDamage = 0;
 
         if (spellList[whichSpell].getNumOfDice() > 0) { // damaging spell
@@ -100,7 +76,7 @@ public class Blight {
                 System.out.println("A previous spell blocks your vision, allowing you to get hit by the blight's " + spellList[whichSpell].getName() + " for " + spellDamage + " damage!");
             } else {
                 System.out.println("The blight casts " + spellList[whichSpell].getName() + " which hits you for " + spellDamage + " damage!");
-                player.subtractHealth(spellDamage);
+                player.takeDamage(spellDamage);
             }
 
             if (spellList[whichSpell].getEffect() != null) { // if it has an effect
@@ -132,7 +108,7 @@ public class Blight {
         }
     }
 
-    public void castspell3(int whichSpell, int dodge) {
+    public void castspellPhase3(int whichSpell, int dodge, Player player) { // todo: make this return an int
         spellDamage = 0;
 
         if (spellList[whichSpell].getNumOfDice() > 0) { // damaging spell
@@ -148,7 +124,7 @@ public class Blight {
                 System.out.println("Because you're blinded, you get hit by the blight's " + spellList[whichSpell].getName() + " for " + spellDamage + " damage!");
             } else {
                 System.out.println("The blight casts " + spellList[whichSpell].getName() + " which hits you for " + spellDamage + " damage!");
-                player.subtractHealth(spellDamage);
+                player.takeDamage(spellDamage);
             }
 
             if (spellList[whichSpell].getEffect() != null) { // if it has an effect

@@ -1,25 +1,18 @@
-public class Player {
-    private final String name;
-    private int health;
-
+public class Player extends Entity {
     private String[] conditions = {"-", "-", "-", "-"};
     private int paralysisTimer = -1;
     private int weaknessTimer = -1;
     private int passiveDamageTimer = -1;
-
     private int blindnessTimer = -1;
 
-    public void subtractHealth(int subtract) {
-        health -= subtract;
+    public Player(String name, int health) {
+        super(name, health, 0, 0, 0, 0);
     }
 
     public String[] getConditions() {
         return conditions;
     }
-    public Player(String name) {
-        this.name = name;
-        health = 150;
-    }
+
     public void setCondition(String condition) { // sets condition + condition timer
         boolean dupes = false;
 
@@ -92,7 +85,7 @@ public class Player {
         if (wheresCondition("Passive damage") > -1) {
             if (passiveDamageTimer != 0) {
                 System.out.println("The lingering spell hurts you for 8 health!");
-                health -= 8;
+                takeDamage(8);
                 passiveDamageTimer--;
             }
             if (passiveDamageTimer == 0) {
