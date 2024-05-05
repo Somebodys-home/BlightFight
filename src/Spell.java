@@ -1,8 +1,36 @@
 public class Spell {
     private String name;
-    private int numOfDice;
-    private int diceType;
+    private int spellDamage;
+    private int spellDamageMultiple;
+    private Condition condition;
     private String effect;
+
+    public Spell(String name, int spellDamage, int spellDamageMultiple) {
+        this.name = name;
+        this.spellDamage = spellDamage;
+        this.spellDamageMultiple = spellDamageMultiple;
+    }
+
+    public Spell(String name, Condition condition) {
+        this.name = name;
+        this.condition = condition;
+    }
+
+    public Spell(String name, String effect) {
+        this.name = name;
+        this.effect = effect;
+    }
+
+    public Spell(String name, int spellDamage, int spellDamageMultiple, Condition condition) {
+        this.name = name;
+        this.spellDamage = spellDamage;
+        this.spellDamageMultiple = spellDamageMultiple;
+        this.condition = condition;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
 
     public String getEffect() {
         return effect;
@@ -12,27 +40,20 @@ public class Spell {
         return name;
     }
 
-    public int getDiceType() {
-        return diceType;
+    public int getSpellDamageMultiple() {
+        return spellDamageMultiple;
     }
 
-    public int getNumOfDice() {
-        return numOfDice;
+    public int getSpellDamage() {
+        return spellDamage;
     }
 
-    public Spell(String name, int numOfDice, int diceType) {
-        this.name = name;
-        this.numOfDice = numOfDice;
-        this.diceType = diceType;
-    }
-    public Spell(String name, String effect) {
-        this.name = name;
-        this.effect = effect;
-    }
-    public Spell(String name, int numOfDice, int diceType, String effect) {
-        this.name = name;
-        this.numOfDice = numOfDice;
-        this.diceType = diceType;
-        this.effect = effect;
+    // PRECONDITION: this method will always be used if the spell given does damage
+    public int calcSpellDamage() {
+        int totalSpellDamage = 0;
+        for (int i = 0; i < spellDamageMultiple; i++) { // rolling damage
+            totalSpellDamage += (int) (Math.random() * spellDamage) + (spellDamage / 2) + 1;
+        }
+        return totalSpellDamage;
     }
 }

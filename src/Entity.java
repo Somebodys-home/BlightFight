@@ -1,6 +1,7 @@
 public class Entity {
     private final String name;
     private int health;
+    private int baselineHealth;
     private int attack;
     private int defense;
     private int speed;
@@ -9,6 +10,7 @@ public class Entity {
     public Entity(String name, int health, int attack, int defense, int speed, int dodge) {
         this.name = name;
         this.health = health;
+        baselineHealth = health;
         this.attack = attack;
         this.defense = defense;
         this.speed = speed;
@@ -34,6 +36,14 @@ public class Entity {
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public int getBaselineHealth() {
+        return baselineHealth;
+    }
+
+    public void setBaselineHealth(int baselineHealth) {
+        this.baselineHealth = baselineHealth;
     }
 
     public void takeDamage(int damage) {
@@ -66,5 +76,13 @@ public class Entity {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    public int getDodge() {
+        return dodge;
+    }
+
+    public void setDodge(int dodge) {
+        this.dodge = dodge;
     }
 }

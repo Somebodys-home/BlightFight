@@ -1,135 +1,148 @@
+import java.util.ArrayList;
+
 public class Player extends Entity {
-    private String[] conditions = {"-", "-", "-", "-"};
-    private int paralysisTimer = -1;
-    private int weaknessTimer = -1;
-    private int passiveDamageTimer = -1;
-    private int blindnessTimer = -1;
+    private ArrayList<Condition> conditions = new ArrayList<>(4);
+    private int numberOfAttacks;
+    private boolean isParalyzed;
+    private boolean isWeakened;
+    private boolean isPassivelyDamaged;
+    private boolean isBlinded;
+    private boolean usedPotion;
 
-    public Player(String name, int health) {
-        super(name, health, 0, 0, 0, 0);
+    public Player(String name, int health, int attack, int defense, int speed, int dodge, int numberOfAttacks) {
+        super(name, health, attack, defense, speed, dodge);
+        this.numberOfAttacks = numberOfAttacks;
+        isParalyzed = false;
+        isWeakened = false;
+        isPassivelyDamaged = false;
+        isBlinded = false;
     }
 
-    public String[] getConditions() {
-        return conditions;
+    public int getNumberOfAttacks() {
+        return numberOfAttacks;
     }
 
-    public void setCondition(String condition) { // sets condition + condition timer
-        boolean dupes = false;
+    // Set condition methods
+    public void giveParalysis() {
+        isParalyzed = true;
+    }
 
-        for (int i = 0; i < conditions.length; i++) { // dupe clause
-            if (conditions[i].equals(condition)) {
-                dupes = true;
-                break;
+    public boolean isParalyzed() {
+        return isParalyzed;
+    }
+
+    public void giveWeakness() {
+        isWeakened = true;
+    }
+
+    public boolean isWeakened() {
+        return isWeakened;
+    }
+
+    public void givePassiveDamage() {
+        isPassivelyDamaged = true;
+    }
+
+    public boolean isPassivelyDamaged() {
+        return isPassivelyDamaged;
+    }
+
+    public void giveBlindness() {
+        isBlinded = true;
+    }
+
+    public boolean isBlinded() {
+        return isBlinded;
+    }
+
+
+    public boolean checkForCondition(String conditionName) {
+        for (Condition condition1 : conditions) {
+            if (condition1.getConditionName().equals(conditionName)) {
+                return true;
             }
         }
-        if (!dupes) {
-            for (int i = 0; i < conditions.length; i++) { // implement
-                if (conditions[i].equals("-")) {
-                    conditions[i] = condition;
-                    break;
-                }
-            }
-            if (condition.equals("Paralysis")) { // start timer
-                paralysisTimer = 2;
-            } else if (condition.equals("Weakness")) {
-                weaknessTimer = 3;
-            } else if (condition.equals("Passive damage")) {
-                passiveDamageTimer = 6;
-            } else if (condition.equals("Blindness")) {
-                blindnessTimer = 3;
-            }
-        }
+        return false;
     }
 
-    public int wheresCondition(String condition) {
-        for (int i = 0; i < conditions.length; i++) {
-            if (condition.equals(conditions[i])) {
-                return i; // Return the position if found
-            }
-        }
-        return -1; // Return -1 if the target is not found in the array
-    }
-
-    public void updateConditions() { // reduces timers
-        if (wheresCondition("Paralysis") > -1) {
-            paralysisTimer--;
-        } else if (wheresCondition("Weakness") > -1) {
-            weaknessTimer--;
-        } else if (wheresCondition("Passive damage") > -1) {
-            passiveDamageTimer--;
-        } else if (wheresCondition("Blindness") > -1) {
-            blindnessTimer--;
-        }
-    }
 
     public void updateConditionArray() {
-        // conditions -> "-"
-        if (wheresCondition("Paralysis") > -1) {
-            if (paralysisTimer == 0) {
-                System.out.println(Colors.YELLOW + "The paralysis afflicting you ends!" + Colors.RESET);
-                deleteCondition("Paralysis");
-                updateConditionHyphens();
-
-                paralysisTimer = -1;
+        for (int i = 0; i < conditions.size(); i++) {
+            if (conditions.get(i).getTimer() == 0) {
+                if (conditions.get(i).getConditionName().equals("Paralysis")) {
+                    System.out.println(Colors.YELLOW + "The paralysis afflicting you ends!" + Colors.RESET);
+                    isParalyzed = false;
+                } else if (conditions.get(i).getConditionName().equals("Weakness")) {
+                    System.out.println(Colors.YELLOW + "The weakness afflicting you ends!" + Colors.RESET);
+                    isWeakened = false;
+                } else if (conditions.get(i).getConditionName().equals("Passive Damage")) {
+                    System.out.println(Colors.YELLOW + "The lingering damage from a previous spell afflicting you ends!" + Colors.RESET);
+                    isPassivelyDamaged = false;
+                } else if (conditions.get(i).getConditionName().equals("Blindness")) {
+                    System.out.println(Colors.YELLOW + "Your vision has cleared!" + Colors.RESET);
+                    isBlinded = false;
+                }
             }
-        }
-        if (wheresCondition("Weakness") > -1) {
-            if (weaknessTimer == 0) {
-                System.out.println(Colors.YELLOW + "The weakness afflicting you ends!" + Colors.RESET);
-                deleteCondition("Weakness");
-                updateConditionHyphens();
-                weaknessTimer = -1;
-            }
-
-        }
-        if (wheresCondition("Passive damage") > -1) {
-            if (passiveDamageTimer != 0) {
-                System.out.println("The lingering spell hurts you for 8 health!");
-                takeDamage(8);
-                passiveDamageTimer--;
-            }
-            if (passiveDamageTimer == 0) {
-                System.out.println(Colors.YELLOW + "The lingering damage from a previous spell afflicting you ends!" + Colors.RESET);
-                deleteCondition("Passive damage");
-                updateConditionHyphens();
-                passiveDamageTimer = -1;
-            }
-        }
-        if (wheresCondition("Blindness") > -1) {
-            if (blindnessTimer == 0) {
-                System.out.println(Colors.YELLOW + "Your vision has cleared!" + Colors.RESET);
-                deleteCondition("Blindness");
-                updateConditionHyphens();
-                blindnessTimer = -1;
-            }
+            conditions.get(i).resetCondition(conditions.get(i));
         }
     }
 
-    public void updateConditionHyphens() {
-        for (int i = 1; i < conditions.length - 1; i++) {
-            if (conditions[i - 1].equals("-")) {
-                conditions[i - 1] = conditions[i];
+    public void resetConditions() {
+        for (int i = 0; i < conditions.size(); i++) {
+            conditions.get(i).resetCondition(conditions.get(i));
+        }
+    }
+
+    public void printStats() {
+        System.out.println(super.getName() + "'s stats:");
+        System.out.println("Health: " + super.getHealth() + " / " + super.getBaselineHealth() + " ❤\uFE0F");
+        System.out.println("Attack: " + super.getAttack() + " ⚔\uFE0F");
+        System.out.println("Defense: " + super.getDefense() + " \uD83D\uDEE1\uFE0F");
+        System.out.println("Dodge: " + super.getDodge() + "% \uD83D\uDCA8");
+        System.out.println("Speed: " + super.getSpeed() + " ⏩");
+        System.out.println();
+        System.out.print("Current conditions:");
+        for (int i = 0; i < conditions.size(); i++) {
+            boolean comma = i != conditions.size() - 1;
+
+            if (conditions.get(i) instanceof Paralysis) {
+                System.out.print("Paralysis");
+                if (comma) {
+                    System.out.print(",");
+                }
+                System.out.print(" ");
+            }
+            if (conditions.get(i) instanceof Weakness) {
+                System.out.print("Weakness");
+                if (comma) {
+                    System.out.print(",");
+                }
+                System.out.print(" ");
+            }
+            if (conditions.get(i) instanceof PassiveDamage) {
+                System.out.print("Passive Damage");
+                if (comma) {
+                    System.out.print(",");
+                }
+                System.out.print(" ");
+            }
+            if (conditions.get(i) instanceof Blindness) {
+                System.out.print("Blindness");
+                if (comma) {
+                    System.out.print(",");
+                }
+                System.out.print(" ");
             }
         }
     }
-    public void deleteCondition(String condition) {
-        for (int i = 0; i < conditions.length; i++) {
-            if (conditions[i].equals(condition)) {
-                conditions[i] = "-";
-            }
+    public boolean useHealingPotion() {
+        if (!usedPotion) {
+            heal(getHealth() / 2);
+            System.out.println(Colors.GREEN + "You heal yourself for " + getHealth() / 2 + " health!" + Colors.RESET);
+            return true;
+        } else {
+            System.out.println("You've already used your healing potion!");
+            return false;
         }
-    }
-    public void failCase() {
-        for (int i = 1; i < conditions.length; i++) {
-            String previousCondition = conditions[i - 1];
-            if (previousCondition.equals(conditions[i])) {
-                conditions[i] = "-";
-            }
-        }
-    }
-    public void reset() {
-        conditions = new String[] {"-", "-", "-", "-"};
-        updateConditionArray();
-        updateConditionHyphens();
     }
 }
